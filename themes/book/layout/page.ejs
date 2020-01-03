@@ -22,16 +22,21 @@
 
   <%- page.content %>
   
-  <% if (page.type === 'guide') { %>
-    <div class="guide-links">
-      <% const lastPage = site.pages.find({ type: page.type, order: { $lt: page.order }}).sort({ order: -1 }).first(); %>
-      <% if (lastPage) { %>
-        <span>← <a href="<%- url_for(lastPage.path) %>"><%- lastPage.title %></a></span>
-      <% } %>
-      <% const nextPage = site.pages.find({ type: page.type, order: { $gt: page.order }}).sort({ order: 1 }).first(); %>
-      <% if (nextPage) { %>
-        <span style="float: right;"><a href="<%- url_for(nextPage.path) %>"><%- nextPage.title %></a> →</span>
-      <% } %>
-    </div>
-  <% } %>
+  <div class="guide-links">
+    <% const lastPage = site.pages.find({ type: page.type, order: { $lt: page.order }}).sort({ order: -1 }).first(); %>
+    <% if (lastPage) { %>
+      <span>← <a href="<%- url_for(lastPage.path) %>"><%- lastPage.title %></a></span>
+    <% } %>
+    <% const nextPage = site.pages.find({ type: page.type, order: { $gt: page.order }}).sort({ order: 1 }).first(); %>
+    <% if (nextPage) { %>
+      <span style="float: right;"><a href="<%- url_for(nextPage.path) %>"><%- nextPage.title %></a> →</span>
+    <% } %>
+  </div>
+
+  <div class="footer">
+    发现错误？想参与编辑？
+    <a href="https://github.com/k55k32/jooq.diamondfsd.com/blob/master/src/<%- page.path.replace(/\.html$/, '.md') %>" rel="noopener" target="_blank">
+      在 GitHub 上编辑此页！
+    </a>
+  </div>
 </div>
