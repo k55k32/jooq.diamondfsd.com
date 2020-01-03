@@ -6,7 +6,7 @@ order: 2
 ---
 
 ## jOOQ 简介
-[jOOQ](jooq.org)，是一个ORM框架，利用其生成的Java代码和流畅的API，可以快速构建有类型约束的安全的SQL语句。让我们的重心可以放在业务逻辑上，Java与SQL的基础部分，都可以交给jOOQ去处理。jOOQ有商业版本和社区版本，商业版本主要比社区版本多支持了一些数据库，可以在他的[授权说明页面](https://www.jooq.org/legal/licensing#databases)上看到各个版本对于数据库的支持情况。开源版本只支持开源数据库包括MySQL等，已经能满足大部分公司开发需求了。
+[jOOQ](https://jooq.org)，是一个ORM框架，利用其生成的Java代码和流畅的API，可以快速构建有类型约束的安全的SQL语句。让我们的重心可以放在业务逻辑上，Java与SQL的基础部分，都可以交给jOOQ去处理。jOOQ有商业版本和社区版本，商业版本主要比社区版本多支持了一些数据库，可以在他的[授权说明页面](https://www.jooq.org/legal/licensing#databases)上看到各个版本对于数据库的支持情况。开源版本只支持开源数据库包括MySQL等，已经能满足大部分公司开发需求了。
 
 jOOQ的核心优势是可以将数据库表结构映射为Java类，包含表的基本描述和所有表字段。通过jOOQ提供的API，配合生成的Java代码，可以很方便的进行数据库操作。
 

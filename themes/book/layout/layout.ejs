@@ -50,22 +50,27 @@
     <%- css('css/search') %>
     <script src="//code.bdstatic.com/npm/docsearch.js@1.5.0/dist/cdn/docsearch.min.js"></script>
     <script>
-    [
-      '#search-query-nav',
-      '#search-query-sidebar',
-      '#search-query-menu'
-    ].forEach(function (selector) {
-      if (!document.querySelector(selector)) return
-      // search index defaults to v2
-      var match = window.location.pathname.match(/^\/(v\d+)/)
-      docsearch({
-      appId: '<%-config.docsearch_app_id%>',
-      apiKey: '<%-config.docsearch_api_key%>',
-      indexName: '<%-config.docsearch_index_name%>',
-      inputSelector: selector,
-      autocompleteOptions: { hint: false, appendTo: 'body'}
-      })
-    })
+      var doSearchAppId = '<%-config.docsearch_app_id%>'
+      var doSearchApiKey = '<%-config.docsearch_api_key%>'
+      var doSearchIndexName = '<%-config.docsearch_index_name%>'
+      if (doSearchAppId) {
+        [
+          '#search-query-nav',
+          '#search-query-sidebar',
+          '#search-query-menu'
+        ].forEach(function (selector) {
+          if (!document.querySelector(selector)) return
+          // search index defaults to v2
+          var match = window.location.pathname.match(/^\/(v\d+)/)
+          docsearch({
+          appId: doSearchAppId,
+          apiKey: doSearchApiKey,
+          indexName: doSearchIndexName,
+          inputSelector: selector,
+          autocompleteOptions: { hint: false, appendTo: 'body'}
+          })
+        })
+      }
     </script>
   </body>
 </html>
