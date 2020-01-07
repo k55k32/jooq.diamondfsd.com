@@ -5,16 +5,14 @@ type: guide
 order: 5
 ---
 
-在之前的章节中，基本每章都有出现的 `Record` 接口，也做过一些简单的讲解和一些代码示例。作为jOOQ中最重要的一个接口，本章将详细讲解 `Record` 的各种API和基础用法。
+在之前的章节中，基本每章都有出现的 `Record` 接口，也做过一些简单的讲解和一些代码示例。作为jOOQ中最重要的一个接口，本章将详细讲解 `Record` 的各种API和基础用法
 
-## 介绍
-`Record` 是jOOQ定义的用于储存数据库结果记录的一个接口，其主要是将一个表字段的列表和值的列表使用相同的顺序储存在一起，可以看做是一个用于储存列/值的映射的对象。
-
-`Record` 通常有以下几种形式
+## Record 形式
+`Record` 是jOOQ定义的用于储存数据库结果记录的一个接口，其主要是将一个表字段的列表和值的列表使用相同的顺序储存在一起，可以看做是一个用于储存列/值的映射的对象。通常有以下几种形式
 
 ### 表记录
 
-来自具体的数据库表，包含主键。在进行查询操作的时候，jOOQ会将结果集包装为一个`TableRecord` 对象。 在使用代码生成器的时候，会生成更详细的表记录类，包含表的每个字段操作等，通常以表名为开头 `XxxxRecord`。
+与数据库表一一对应，如果包含主键，会继承`UpdatableRecordImpl`类，该类提供了使用 `update`, `delete` API进行数据操作。进行查询操作时，jOOQ会将结果集包装为一个`TableRecord` 对象。 在使用代码生成器的时候，会生成更详细的表记录类，包含表的每个字段操作等，通常以表名为开头 `XxxxRecord`。
 
 ### UDT 记录   
     
@@ -103,4 +101,212 @@ S1UserRecord fetchIntoUserRecord = dslContext.select().from(S1_USER)
         .fetchOneInto(S1UserRecord.class);
 fetchIntoUserRecord.setEmail("hello email2");
 int row2 = fetchIntoUserRecord.update();
+```
+
+## 数据库交互API
+
+### `insert`
+此方法进行数据插入操作，几个重载可以指定插入的数据字段
+- `insert()`   插入所有`set`后的字段
+- `insert(Field<?> ... feilds)`  插入指定`set`后的字段
+- `insert(Collection<? extends Field<?>> fields)`  插入指定`set`后的字段
+
+需要注意的是，插入的字段必须显式的进行`set`操作，才会在最终的SQL语句中体现出来
+
+```java
+// 常规用法
+S1UserRecord userRecord = dslContext.newRecord(S1_USER);
+userRecord.setUsername("insertUsername");
+userRecord.setEmail("email");
+userRecord.insert();
+// insert into `learn-jooq`.`s1_user` (`username`, `email`) 
+// values ('insertUsername', 'email')
+
+// 指定字段插入
+userRecord = dslContext.newRecord(S1_USER);
+userRecord.setUsername("insertUsername");
+userRecord.setEmail("email");
+userRecord.insert(S1_USER.USERNAME, S1_USER.ADDRESS);
+// insert into `learn-jooq`.`s1_user` (`username`)
+// values ('insertUsername')
+```
+
+### `update`
+此方法进行更新操作，和 `insert` 方法类似，重载的也一样
+- `update()`  更新所有`set`后的字段
+- `update(Field<?> ... feilds)`   更新指定`set`后的字段
+- `update(Collection<? extends Field<?>> fields)`  更新指定`set`后的字段
+
+重载参数的目的是为了约束更新的字段，同样的，只有经过`set`的字段，才会被更新处理
+
+```java
+S1UserRecord userRecord = dslContext.selectFrom(S1_USER)
+                .where(S1_USER.ID.eq(1))
+                .fetchSingle();
+userRecord.setEmail(null);
+userRecord.setUsername("hello");
+userRecord.update(S1_USER.USERNAME, S1_USER.ADDRESS);
+// update `learn-jooq`.`s1_user`
+// set `learn-jooq`.`s1_user`.`username` = 'hello' 
+// where `learn-jooq`.`s1_user`.`id` = 1
+```
+
+### `delete`
+`delete` 方法根据主键进行数据删除操作
+- `delete()` 根据主键删除数据
+
+```java
+// 有主键值
+S1UserRecord userRecord = dslContext.newRecord(S1_USER);
+userRecord.setId(1);
+userRecord.delete();
+// delete from `learn-jooq`.`s1_user` where `learn-jooq`.`s1_user`.`id` = 1
+
+// 无主键值
+userRecord = dslContext.newRecord(S1_USER);
+userRecord.delete();
+// delete from `learn-jooq`.`s1_user` where `learn-jooq`.`s1_user`.`id` is null
+```
+
+## 数据处理API
+
+### `get`
+`get` 系列方法主要是用于获取字段值
+
+- `get(..)` 可以取任意字段的值，非常通用，有很多重载，基本涵盖了所有业务场景，包括取值，转换。 这里列举几个常见用法
+```java 
+Record record = dslContext.select().from(S1_USER).limit(1).fetchOne();
+// 直接取出指定字段数据
+Integer id = record.get(S1_USER.ID);
+// 取出数据并指定转换的数据类型
+Long createTimeLong = record.get(S1_USER.CREATE_TIME, Long.class);
+```
+
+- `get[FieldName]()` jOOQ生成和表字段一一对应的`getter`方法，可以通过此方法直接获取指定字段，实际调用的是 `get(fieldIndex)` 方法
+```java 
+S1UserRecord userRecord = dslContext.select().from(S1_USER)
+        .fetchAny().into(S1_USER);
+Integer id = userRecord.getId();
+Timestamp createTime = userRecord.getCreateTime();
+```
+
+- `value[N]` 方法为`Record[N]` 接口提供的类，查询明确个数的字段值时，可以快速的获取对应位置下标的值
+```java
+Record3<Integer, String, Timestamp> record3 = dslContext
+        .select(S1_USER.ID,
+                S1_USER.USERNAME,
+                S1_USER.CREATE_TIME)
+        .from(S1_USER)
+        .fetchAny();
+
+Integer id = record3.value1();
+String username = record3.value2();
+Timestamp createTime = record3.get(S1_USER.CREATE_TIME);
+```
+
+### `set`
+`set` 系列方法主要是用于设置字段值
+
+- `set(..)` 可以设置字段的值，通常在设置值后用于 `insert`/`update` 操作
+```java 
+S1UserRecord userRecord = dslContext.newRecord(S1_USER);
+userRecord.set(S1_USER.ID, 1);
+userRecord.set(S1_USER.USERNAME, "username");
+userRecord.update();
+```
+
+- `get[FieldName]()` jOOQ生成和表字段一一对应的`setter`方法，可以通过此方法直接设置指定字段值，实际调用的是 `set(fieldIndex, object)` 方法
+```java 
+S1UserRecord userRecord = dslContext.newRecord(S1_USER);
+userRecord.setId(1);
+userRecord.setUsername("username");
+userRecord.update();
+```
+
+### `changed`
+此方法用于修改字段更新标识，一般 `update`/`insert` 方法配合使用，可以设置指定字段是否 更新/储存
+```java
+S1UserRecord userRecord = dslContext.newRecord(S1_USER);
+userRecord.setId(1);
+userRecord.setUsername("username");
+userRecord.setEmail(null);
+userRecord.changed(S1_USER.EMAIL, false);
+userRecord.update();
+```
+
+### `reset`
+此方法用于重置字段更新标识，效果和 `changed(Field field, false)` 相同
+```java
+S1UserRecord userRecord = dslContext.newRecord(S1_USER);
+userRecord.setId(1);
+userRecord.setUsername("username");
+userRecord.setEmail(null);
+userRecord.reset(S1_USER.EMAIL);
+userRecord.update();
+```
+
+## 对象转换API
+`Record` 提供了转换类API，可以方便快捷的将`Record`转换为其他任意类型，也可以将任意类型填充至`Record`对象中。其核心主要是 `from`/`into` 系列方法
+
+### `from`
+此系列方法包含 `from(...)`, `fromMap(...)` , `fromArray(...)` 三个方法，主要是可以将任意对象填充至`Record`中
+
+- `from(Object object)`
+```java
+S1UserPojo userPojo = new S1UserPojo();
+userPojo.setUsername("username");
+userPojo.setAddress("address");
+S1UserRecord userRecord = dslContext.newRecord(S1_USER);
+userRecord.from(userPojo);
+```
+
+- `fromMap(Map<String, ?> map)`
+```java
+Map<String, Object> userDataMap = new HashMap<>();
+userDataMap.put("username", "username1");
+userDataMap.put("address", "user-address-1");
+S1UserRecord userRecord1 = dslContext.newRecord(S1_USER);
+userRecord1.fromMap(userDataMap);
+```
+
+- `fromArray(Object[] array, Field<?> ... fields)`
+```java
+Object[] userDataArray = new Object[]{"username2", "user-address-2"};
+S1UserRecord userRecord2 = dslContext.newRecord(S1_USER);
+userRecord2.fromArray(userDataArray, S1_USER.USERNAME, S1_USER.ADDRESS);
+```
+
+### `into` 
+此系列方法是将`Record`转换为其他任意指定类型，常用的方法有
+
+- `into(Class<?> type)`
+```java
+S1UserRecord userRecord = dslContext.selectFrom(S1_USER)
+        .where(S1_USER.ID.eq(id))
+        .fetchOne();
+S1UserPojo userPojo = userRecord.into(S1UserPojo.class);
+```
+
+- `into(Field<?> ... fields)`
+```java
+Record2<Integer, String> record2 =  userRecord
+                                .into(S1_USER.ID, S1_USER.USERNAME);
+Integer id = record2.value1();
+```
+
+- `intoArray()`
+```java
+Object[] userArray = userRecord.intoArray();
+Integer fromArrayId = (Integer) userArray[0];
+```
+
+- `intoMap()`
+```java
+Map<String, Object> userMap = userRecord.intoMap();
+Integer mapId = userMap.get("id");
+```
+
+- `intoResultSet()`
+```java
+ResultSet resultSet = userRecord.intoResultSet();
 ```
