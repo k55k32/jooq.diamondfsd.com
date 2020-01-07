@@ -280,6 +280,7 @@ userRecord2.fromArray(userDataArray, S1_USER.USERNAME, S1_USER.ADDRESS);
 此系列方法是将`Record`转换为其他任意指定类型，常用的方法有
 
 - `into(Class<?> type)`
+此方法主要是通过反射的方式，创建目标类实例，并将对应字段值设置到目标实例中，也是在业务代码中用的最多的一个重载
 ```java
 S1UserRecord userRecord = dslContext.selectFrom(S1_USER)
         .where(S1_USER.ID.eq(id))
@@ -310,3 +311,8 @@ Integer mapId = userMap.get("id");
 ```java
 ResultSet resultSet = userRecord.intoResultSet();
 ```
+
+## 内容总结
+本章源码: [https://github.com/k55k32/learn-jooq/tree/master/section-4](https://github.com/k55k32/learn-jooq/tree/master/section-4)
+
+本章主要是讲解了 `Record` 的各种形式和常用的API，单独拿一章出来讲解 `Record`，主要是因为在jOOQ中，基本所有操作都是在和 `Record` 类接口打交道。本章对大部分常用API做了简单的示例，大家可以根据测试源码内测试用例进行参考，能更好的掌握 `Record` API的使用。
