@@ -11,14 +11,9 @@ email: diamondfsd@gmail.com
 language: zh-CN
 github_repository: https://github.com/k55k32/jooq.diamondfsd.com
 
-# google analytics
-google_analytics: 
-root_domain: 
-
 # docsearch
-docsearch_app_id:
-docsearch_api_key:
-docsearch_index_name:
+docsearch_api_key: 7f87de6971dbc95b5903cb9d4baea5a4
+docsearch_index_name: jooq
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
