@@ -1,43 +1,33 @@
 @import "_settings"
 
-$border = #ddd
-
 @media (max-width: 900px)
   .algolia-autocomplete
     position: fixed!important
+    
+/* Main dropdown wrapper */
+.algolia-autocomplete .ds-dropdown-menu
+  width: 500px
 
-.algolia-autocomplete
-  line-height: normal
+/* Main category (eg. Getting Started) */
+.algolia-autocomplete .algolia-docsearch-suggestion--category-header
+  color: gray
+  border-bottom: 1px solid darkgray
+  line-height: 1.5
 
-.aa-dropdown-menu
-  width: 100%
-  border-color: #999
-  font-size: 0.9rem
+/* Category (eg. Downloads) */
+.algolia-autocomplete .algolia-docsearch-suggestion--subcategory-column
+  color: gray
 
-@media (min-width: 768px)
-  .aa-dropdown-menu
-    min-width: 515px
+/* Title (eg. Bootstrap CDN) */
+.algolia-autocomplete .algolia-docsearch-suggestion--title 
+  font-weight: bold
+  color: black
 
-.algolia-docsearch-suggestion
-  border-color: $border
+/* Description description (eg. Bootstrap currently works...) */
+.algolia-autocomplete .algolia-docsearch-suggestion--text 
+  font-size: 0.8rem
+  color: gray
 
-.algolia-docsearch-suggestion--content
-  color: $dark
-
-.algolia-docsearch-suggestion--subcategory-column
-  border-color: $border
-
-.algolia-docsearch-suggestion--category-header
-  background: $theme-color
-
-.algolia-docsearch-footer
-  border-color: $border
-
-.algolia-docsearch-suggestion--category-header .algolia-docsearch-suggestion--highlight
-  background: rgba(255, 255, 255, 0.6)
-
-.algolia-docsearch-suggestion--highlight
-  color: #2c815b
-
-.aa-cursor .algolia-docsearch-suggestion--content
-  color: $dark
+/* Highlighted text */
+.algolia-autocomplete .algolia-docsearch-suggestion--highlight 
+  color: blue
