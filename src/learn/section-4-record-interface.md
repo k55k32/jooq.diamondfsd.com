@@ -1,6 +1,6 @@
 ---
 title: Record 详解
-group: base
+group:
 type: guide
 order: 5
 ---
@@ -14,11 +14,14 @@ order: 5
 
 与数据库表一一对应，如果包含主键，会继承`UpdatableRecordImpl`类，该类提供了使用 `update`, `delete` API进行数据操作。进行查询操作时，jOOQ会将结果集包装为一个`TableRecord` 对象。 在使用代码生成器的时候，会生成更详细的表记录类，包含表的每个字段操作等，通常以表名为开头 `XxxxRecord`。
 
-### UDT 记录   
-    
+此类 `Record` 对象一般都有对应字段的`getter/setter`方法，但其都只是去调用`get/set`方法。其储存的方式还是通过两个数组来储存对应列/值的数据的，所以`Record`对象是不能被`JSON`直接序列化和反序列化的。
+
+
+### UDT 记录
+
 通常用于 Oracle 等支持用户自定义数据类型的数据库记录，这里接触较少，不作讲解
 
-### 明确数据的记录   
+### 明确数据的记录
 
 通用记录类型的一种，当你的字段不超过22个时，会根据字段个数反射成 `Record1`, `Record2` ... `Record22` 类的对象。这些对象需要的泛型个数和后面的数字一致，类型和字段类型一致。jOOQ自动生成的`Record`对象里，如果字段个数不超过 22 个，会同时实现 `Record[N]` 接口
 
@@ -26,7 +29,7 @@ order: 5
 
 - `s1_user` 这张表有6个字段，其生成的 `Record` 对象，继承了 `UpdatableRecordImpl` 并且实现了 `Record6` 接口。`Record6`接口的泛型参数和表字段类型一一对应，类型顺序和数据库内字段顺序一致
 ```Java
-class S1UserRecord extends UpdatableRecordImpl<S1UserRecord> 
+class S1UserRecord extends UpdatableRecordImpl<S1UserRecord>
     implements Record6<Integer, String, String, String, Timestamp, Timestamp>
 ```
 
@@ -50,7 +53,7 @@ interface Record[N]<T1, ... T[N]> {
 
     // 设置值
     Record[1]<T1> value1(T1 value)
-    ... 
+    ...
     Record[N]<TN> value1(T[N] value)
 }
 ```
@@ -119,7 +122,7 @@ S1UserRecord userRecord = dslContext.newRecord(S1_USER);
 userRecord.setUsername("insertUsername");
 userRecord.setEmail("email");
 userRecord.insert();
-// insert into `learn-jooq`.`s1_user` (`username`, `email`) 
+// insert into `learn-jooq`.`s1_user` (`username`, `email`)
 // values ('insertUsername', 'email')
 
 // 指定字段插入
@@ -147,7 +150,7 @@ userRecord.setEmail(null);
 userRecord.setUsername("hello");
 userRecord.update(S1_USER.USERNAME, S1_USER.ADDRESS);
 // update `learn-jooq`.`s1_user`
-// set `learn-jooq`.`s1_user`.`username` = 'hello' 
+// set `learn-jooq`.`s1_user`.`username` = 'hello'
 // where `learn-jooq`.`s1_user`.`id` = 1
 ```
 
@@ -174,7 +177,7 @@ userRecord.delete();
 `get` 系列方法主要是用于获取字段值
 
 - `get(..)` 可以取任意字段的值，非常通用，有很多重载，基本涵盖了所有业务场景，包括取值，转换。 这里列举几个常见用法
-```java 
+```java
 Record record = dslContext.select().from(S1_USER).limit(1).fetchOne();
 // 直接取出指定字段数据
 Integer id = record.get(S1_USER.ID);
@@ -183,7 +186,7 @@ Long createTimeLong = record.get(S1_USER.CREATE_TIME, Long.class);
 ```
 
 - `get[FieldName]()` jOOQ生成和表字段一一对应的`getter`方法，可以通过此方法直接获取指定字段，实际调用的是 `get(fieldIndex)` 方法
-```java 
+```java
 S1UserRecord userRecord = dslContext.select().from(S1_USER)
         .fetchAny().into(S1_USER);
 Integer id = userRecord.getId();
@@ -208,7 +211,7 @@ Timestamp createTime = record3.get(S1_USER.CREATE_TIME);
 `set` 系列方法主要是用于设置字段值
 
 - `set(..)` 可以设置字段的值，通常在设置值后用于 `insert`/`update` 操作
-```java 
+```java
 S1UserRecord userRecord = dslContext.newRecord(S1_USER);
 userRecord.set(S1_USER.ID, 1);
 userRecord.set(S1_USER.USERNAME, "username");
@@ -216,7 +219,7 @@ userRecord.update();
 ```
 
 - `get[FieldName]()` jOOQ生成和表字段一一对应的`setter`方法，可以通过此方法直接设置指定字段值，实际调用的是 `set(fieldIndex, object)` 方法
-```java 
+```java
 S1UserRecord userRecord = dslContext.newRecord(S1_USER);
 userRecord.setId(1);
 userRecord.setUsername("username");
@@ -276,7 +279,7 @@ S1UserRecord userRecord2 = dslContext.newRecord(S1_USER);
 userRecord2.fromArray(userDataArray, S1_USER.USERNAME, S1_USER.ADDRESS);
 ```
 
-### `into` 
+### `into`
 此系列方法是将`Record`转换为其他任意指定类型，常用的方法有
 
 - `into(Class<?> type)`
