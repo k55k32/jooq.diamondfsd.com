@@ -1,6 +1,6 @@
 ---
 title: Record 详解
-group:
+group: advanced
 type: guide
 order: 5
 ---

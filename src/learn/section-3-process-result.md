@@ -1,6 +1,6 @@
 ---
 title: 查询结果处理
-group: base
+group: advanced
 type: guide
 order: 4
 ---
@@ -46,7 +46,7 @@ List<S1UserPojo> userPojoList = dslContext.select()
 
 ```
     多表查询，字段相同时，直接用into方法将结果集转换为POJO时，相同字段名称的方法会以最后一个字段值为准。这时候，我们可以现将结果集通过 `into(Table table)` 方法将结果集转换为指定表的`Record`对象，然后再`into`进指定的POJO类中。
-```java 
+```java
 // 多表关联查询，查询s2_user_message.id = 2的数据，直接into的结果getId()却是1
 // 这是因为同时关联查询了s1_user表，该表的id字段值为1
 List<S2UserMessage> userMessage = dslContext.select().from(S2_USER_MESSAGE)
@@ -78,7 +78,7 @@ List<Integer> id = dslContext.select().from(S1_USER).where(S1_USER.ID.eq(1))
     可以直接通过字段名称字符串获取指定字段值，可以通过第二个参数指定返回值，如果不指定，返回Object
 ```java
 List<Integer> idList = dslContext.select().from(S1_USER).where(S1_USER.ID.eq(1))
-        .fetch("id", Integer.class); 
+        .fetch("id", Integer.class);
 ```
 
 - `fetch(int fieldIndex, Class<?> type)`
@@ -142,7 +142,7 @@ Map<Integer, List<Integer>> userIdUserMessageIdMap = dslContext.select().from(S2
 ## 内容总结
 本章源码: [https://github.com/k55k32/learn-jooq/tree/master/section-3](https://github.com/k55k32/learn-jooq/tree/master/section-3)
 
-文章主要讲解的是各种类型的读取API，掌握好这些API对于jOOQ的使用很有帮助。 
+文章主要讲解的是各种类型的读取API，掌握好这些API对于jOOQ的使用很有帮助。
 
 本章中出现的一下几个接口可能是在编码过程中经常遇到的
 
