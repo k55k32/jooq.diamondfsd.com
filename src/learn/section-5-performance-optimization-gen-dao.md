@@ -188,9 +188,44 @@ public class S4UnionKeyDao extends DAOImpl<S4UnionKeyRecord, S4UnionKeyPojo, Rec
 这些方法能够满足基本的需求，但是对于一些复杂查询，以及多表关联查询，还是需要使用 `DSLContext` 的API来完成。
 
 ### DAO 的初始化
--- TODO
+jOOQ生成的DAO有两个构造器，DAO是需要跟数据库交互的，所以这里必须要设置数据库连接才能正常使用
+```java
+public S1UserDao() {
+    super(TS1User.S1_USER, S1UserPojo.class);
+}
+
+public S1UserDao(Configuration configuration) {
+    super(TS1User.S1_USER, S1UserPojo.class, configuration);
+}
+```
+初始化首先得有`Configuration`对象，如果已经实例化了 `DSLContext`， 可以用 `DSLContext.configuration()` 方法获取配置对象
+
+```java
+// 方式1: 
+S1UserDao s1UserDao = new S1UserDao(dslContext.configuration());
+
+// 方式2:
+S1UserDao s1UserDao = new S1UserDao();
+s1UserDao.setConfiguration(dslContext.configuration());
+```
+
+### DAO 代码演示
+```java
+S1UserDao s1UserDao = new S1UserDao(dslContext.configuration());
+
+S1UserPojo s1UserPojo = s1UserDao.fetchOneById(1);
+
+S1UserPojo userPojo = s1UserDao.findById(1);
+
+List<S1UserPojo> s1UserPojos =
+        s1UserDao.fetchByUsername(s1UserPojo.getUsername());
+
+List<S1UserPojo> allUser = s1UserDao.findAll();
+```
 
 ## 内容总结
 本章源码: [https://github.com/k55k32/learn-jooq/tree/master/section-5](https://github.com/k55k32/learn-jooq/tree/master/section-5)
 
-本章主要是介绍了 interface接口和针对表的DAO类生成，以及简单的展示了一下
+本章主要是介绍了interface接口和针对表的DAO类生成，以及简单的展示了一下DAO的代码调用。
+
+jOOQ的大部分功能到本章为止，已经介绍的差不多了。后续的章节中，将主要和Spring框架结合，介绍在实际业务中jOOQ的使用经验。
