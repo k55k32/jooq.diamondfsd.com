@@ -12,9 +12,9 @@ order: 5
 
 ### 表记录
 
-与数据库表一一对应，如果包含主键，会继承`UpdatableRecordImpl`类，该类提供了使用 `update`, `delete` API进行数据操作。进行查询操作时，jOOQ会将结果集包装为一个`TableRecord` 对象。 在使用代码生成器的时候，会生成更详细的表记录类，包含表的每个字段操作等，通常以表名为开头 `XxxxRecord`。
+与数据库表一一对应，如果包含主键，会继承`UpdatableRecordImpl`类，该类提供了使用 `update`, `delete` API进行数据操作。进行查询操作时，jOOQ会将结果集包装为一个`TableRecord` 对象。 在使用代码生成器的时候，会生成更详细的表记录类，包含表的每个字段操作等，通常以表名为开头 `XxxxRecord`
 
-此类 `Record` 对象一般都有对应字段的`getter/setter`方法，但其都只是去调用`get/set`方法。其储存的方式还是通过两个数组来储存对应列/值的数据的，所以`Record`对象是不能被`JSON`直接序列化和反序列化的。
+此类 `Record` 对象一般都有对应字段的`getter/setter`方法，但其都只是去调用`get/set`方法。其储存的方式还是通过两个数组来储存对应列/值的数据的，所以`Record`对象是不能被`JSON`直接序列化和反序列化的
 
 
 ### UDT 记录
@@ -38,7 +38,7 @@ class S1UserRecord extends UpdatableRecordImpl<S1UserRecord>
 class S4ColumenGt22Record extends UpdatableRecordImpl<S4ColumenGt22Record>
 ```
 
-再看看 `Record[N]` 的接口定义，此接口主要是提供了获取字段，获取值，设置值的方法。由泛型决定字段/值类型和顺序，N 决定字段/值的个数。此接口的目的其实也很简单，就是为了更快速的操作指定位置的字段/值。
+再看看 `Record[N]` 的接口定义，此接口主要是提供了获取字段，获取值，设置值的方法。由泛型决定字段/值类型和顺序，N 决定字段/值的个数。此接口的目的其实也很简单，就是为了更快速的操作指定位置的字段/值
 ```java
 interface Record[N]<T1, ... T[N]> {
     // 获取字段
@@ -81,7 +81,7 @@ Integer id = dslContext.insertInto(S1_USER).set(s1UserRecord)
 ```
 
 ### `newRecord`
-在获取到 `DSLContext` 实例后，可以使用 `dslContext.newRecord(Table<?> table)` 方法来创建一个指定表的`Record`对象，这也是比较常用的方法。通过此方法创建的对象包含了`dslContext`内的数据连接配置，可以直接进行 `insert`, `update`, `delete` 等操作。
+在获取到 `DSLContext` 实例后，可以使用 `dslContext.newRecord(Table<?> table)` 方法来创建一个指定表的`Record`对象，这也是比较常用的方法。通过此方法创建的对象包含了`dslContext`内的数据连接配置，可以直接进行 `insert`, `update`, `delete` 等操作
 ```java
 S1UserRecord s1UserRecord = dslContext.newRecord(S1_USER);
 s1UserRecord.setUsername("newRecord1");
@@ -318,4 +318,4 @@ ResultSet resultSet = userRecord.intoResultSet();
 ## 内容总结
 本章源码: [https://github.com/k55k32/learn-jooq/tree/master/section-4](https://github.com/k55k32/learn-jooq/tree/master/section-4)
 
-本章主要是讲解了 `Record` 的各种形式和常用的API，单独拿一章出来讲解 `Record`，主要是因为在jOOQ中，基本所有操作都是在和 `Record` 类接口打交道。本章对大部分常用API做了简单的示例，大家可以根据测试源码内测试用例进行参考，能更好的掌握 `Record` API的使用。
+本章主要是讲解了 `Record` 的各种形式和常用的API，单独拿一章出来讲解 `Record`，主要是因为在jOOQ中，基本所有操作都是在和 `Record` 类接口打交道。本章对大部分常用API做了简单的示例，大家可以根据测试源码内测试用例进行参考，能更好的掌握 `Record` API的使用

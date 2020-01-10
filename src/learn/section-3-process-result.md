@@ -5,9 +5,9 @@ type: guide
 order: 4
 ---
 
-POJO是一个简单的Java对象，主要是包含一些属性和 `getter/setter` 方法，在业务中常用到的是用于传输数据以及作为参数传递。 在Web应用的场景中，也通常用来和前端做数据交互。
+POJO是一个简单的Java对象，主要是包含一些属性和 `getter/setter` 方法，在业务中常用到的是用于传输数据以及作为参数传递。 在Web应用的场景中，也通常用来和前端做数据交互
 
-jOOQ的代码生成器能够帮我们根据表结构生成对应的POJO，能很大程度上减少我们自己创建POJO的工作量，当然，此功能也是大部分ORM框架的必备功能。本章主要讲解各种方式将数据结果转换为我们想要的格式。
+jOOQ的代码生成器能够帮我们根据表结构生成对应的POJO，能很大程度上减少我们自己创建POJO的工作量，当然，此功能也是大部分ORM框架的必备功能。本章主要讲解各种方式将数据结果转换为我们想要的格式
 
 ## Fetch 系列 API
 查询操作通常以fetch API 作为结束API，例如常用的有，所有的读取类方法都差不多，掌握一个就能很快的举一反三
@@ -24,7 +24,7 @@ jOOQ的代码生成器能够帮我们根据表结构生成对应的POJO，能很
   - `fetchGroups`   读取并返回一个分组Map
 
 ### `fetch`
-作为一个常用的读取多条记录的API，其他几个读取多条的方法和这个方法类似，只是返回值不同。
+作为一个常用的读取多条记录的API，其他几个读取多条的方法和这个方法类似，只是返回值不同
 
  `fetchSet, fetchArray`  方法和 `fetch` 方法一样，都是返回多条数据，只是返回的格式不同，fetch通常返回List或者jOOQ的Result对象
 
@@ -45,7 +45,7 @@ List<S1UserPojo> userPojoList = dslContext.select()
             .fetch(r -> r.into(S1UserPojo.class));
 
 ```
-    多表查询，字段相同时，直接用into方法将结果集转换为POJO时，相同字段名称的方法会以最后一个字段值为准。这时候，我们可以现将结果集通过 `into(Table table)` 方法将结果集转换为指定表的`Record`对象，然后再`into`进指定的POJO类中。
+    多表查询，字段相同时，直接用into方法将结果集转换为POJO时，相同字段名称的方法会以最后一个字段值为准。这时候，我们可以现将结果集通过 `into(Table table)` 方法将结果集转换为指定表的`Record`对象，然后再`into`进指定的POJO类中
 ```java
 // 多表关联查询，查询s2_user_message.id = 2的数据，直接into的结果getId()却是1
 // 这是因为同时关联查询了s1_user表，该表的id字段值为1
@@ -142,7 +142,7 @@ Map<Integer, List<Integer>> userIdUserMessageIdMap = dslContext.select().from(S2
 ## 内容总结
 本章源码: [https://github.com/k55k32/learn-jooq/tree/master/section-3](https://github.com/k55k32/learn-jooq/tree/master/section-3)
 
-文章主要讲解的是各种类型的读取API，掌握好这些API对于jOOQ的使用很有帮助。
+文章主要讲解的是各种类型的读取API，掌握好这些API对于jOOQ的使用很有帮助
 
 本章中出现的一下几个接口可能是在编码过程中经常遇到的
 

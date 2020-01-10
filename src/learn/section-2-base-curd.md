@@ -5,7 +5,7 @@ type: guide
 order: 3
 ---
 
-通过 `DSLContext` API 和 `Record` API，可以完成基础CURD操作。本篇主要通过一些实例代码，讲解最基础的用法。后面的相关篇幅中，也会说到一些扩展以及其他高级用法。
+通过 `DSLContext` API 和 `Record` API，可以完成基础CURD操作。本篇主要通过一些实例代码，讲解最基础的用法。后面的相关篇幅中，也会说到一些扩展以及其他高级用法
 
 从此篇幅开始，以下代码块中不再详细编写关于`DSLContext`的创建过程，具体可以看 [section-1](/learn/index.html) 中讲解的基础初始化方式
 
@@ -161,8 +161,7 @@ dslContext.batchUpdate(userRecordList).execute();
 查询操作基本都是通过类SQL的语法进行操作
 
 ### 单表查询
-基本查询方法，默认查询指定表的所有字段，返回一个结果集的包装，通过`Result.into`方法，可以将结果集转换为任意指定类型集合。
-当然也可以通过 `Record.getValue` 方法取得任意字段值，值类型依赖于字段类型
+基本查询方法，默认查询指定表的所有字段，返回一个结果集的包装，通过`Result.into`方法，可以将结果集转换为任意指定类型集合，当然也可以通过 `Record.getValue` 方法取得任意字段值，值类型依赖于字段类型
 ```java
 // select `learn-jooq`.`s1_user`.`id`, `learn-jooq`.`s1_user`.`username`, `learn-jooq`.`s1_user`.`email`, `learn-jooq`.`s1_user`.`address`, `learn-jooq`.`s1_user`.`create_time`, `learn-jooq`.`s1_user`.`update_time` from `learn-jooq`.`s1_user`
 Result<Record> fetchResult = dslContext.select().from(S1_USER).fetch();
@@ -181,7 +180,7 @@ fetchAll.forEach(record -> {
 ```
 
 ### 关联查询
-多表关联查询也很简单，和写SQL的方法类似，关联查询出来的结果集，可以自定义一个POJO来储存数据。
+多表关联查询也很简单，和写SQL的方法类似，关联查询出来的结果集，可以自定义一个POJO来储存数据
 
 新建一个POJO，用于储存查询结果
 ```java
@@ -193,8 +192,7 @@ public class UserMessagePojo {
 }
 ```
 
-之前说过通过`into`方法可以将结果或结果集转换为任意类型，jOOQ会通过反射的方式，将对应的字段值填充至指定的POJO中。
-通过关联查询的结果集，可以使用此方法将查询结果转换至指定类型的集合。
+之前说过通过`into`方法可以将结果或结果集转换为任意类型，jOOQ会通过反射的方式，将对应的字段值填充至指定的POJO中。通过关联查询的结果集，可以使用此方法将查询结果转换至指定类型的集合。
 ```java
 Result<Record3<String, String, String>> record3Result =
         dslContext.select(S1_USER.USERNAME,
@@ -248,7 +246,7 @@ dslContext.batchDelete(recordList).execute();
 
 
 ## POJO和自定义代码生成器配置
-之前代码中，进行关联查询时，对于结果集的处理比较麻烦，需要自己创建POJO类进行操作。在实际业务中，多表关联查询是很经常的事情，如果每个查询的结果都需要自己创建POJO来储存数据，那也是不小的工作了，而且操作起来还很繁琐，需要确认每个字段的名称以及类型。
+之前代码中，进行关联查询时，对于结果集的处理比较麻烦，需要自己创建POJO类进行操作。在实际业务中，多表关联查询是很经常的事情，如果每个查询的结果都需要自己创建POJO来储存数据，那也是不小的工作了，而且操作起来还很繁琐，需要确认每个字段的名称以及类型
 
 对于这样的情况，可以通过jOOQ的代码生成器来解决。代码生成器可以配置在生成代码时，同时生成和表一一对应的POJO，只需要在生成器配置`generator`块中，加上相关配置即可:
 
@@ -261,7 +259,7 @@ dslContext.batchDelete(recordList).execute();
 </generator>
 ```
 
-通过以上配置，代码生成的时候，会同时生成和表一一对应的POJO类。因为jOOQ的代码生成每次都是全量生成的，那么我们在编写相关业务代码的时候，不能去修改jOOQ生成的所有代码，那么在关联查询的时候，我们如果要基于原有的某个POJO添加其他字段，那么我们可以自己创建一个和表名一致的类，然后继承该POJO对象，在添加上我们需要的字段，例如本篇代码实例中的`s2_user_message`表，在这里我们需要将这张表和`s1_user`表进行关联查询，为了是查出用户ID对应的用户名。
+通过以上配置，代码生成的时候，会同时生成和表一一对应的POJO类。因为jOOQ的代码生成每次都是全量生成的，那么我们在编写相关业务代码的时候，不能去修改jOOQ生成的所有代码，那么在关联查询的时候，我们如果要基于原有的某个POJO添加其他字段，那么我们可以自己创建一个和表名一致的类，然后继承该POJO对象，在添加上我们需要的字段，例如本篇代码实例中的`s2_user_message`表，在这里我们需要将这张表和`s1_user`表进行关联查询，为了是查出用户ID对应的用户名
 
 那么我们之前定义的 `UserMessagePojo` 变成直接继承POJO类 `S2UserMessage`，然后添加需要关联查询的字段名: 
 ```java
@@ -278,7 +276,7 @@ public class UserMessagePojo extends S2UserMessage {
 }
 ```
 
-添加POJO的生产配置后，jOOQ最终生成的目录如下图，比之前来说，多了一个`pojos`包，用于存放所有POJO。
+添加POJO的生产配置后，jOOQ最终生成的目录如下图，比之前来说，多了一个`pojos`包，用于存放所有POJO
 ```
 ├─src/main/java/.../codegen ---- // 生成路径
 │ ├─tables --------------------- // 表定义目录
@@ -291,7 +289,7 @@ public class UserMessagePojo extends S2UserMessage {
 │ └─Tables --------------------- // 所有数据库表常量
 ```
 
-于此同时，我们也发现，`pojos`目录下的所有POJO类名和 `tables` 目录下所有表描述对象的类名一致，这样开发时，有个麻烦，就是引用的时候还需要去关注所在包路径，不能直观的看出哪个是表描述类或者是POJO类，而且在同一个类中同时用到POJO和表描述类时，会出现要引用全路径的类(`xx.xx.xx.XXXX`)的情况，降低了代码的可读性。
+于此同时，我们也发现，`pojos`目录下的所有POJO类名和 `tables` 目录下所有表描述对象的类名一致，这样开发时，有个麻烦，就是引用的时候还需要去关注所在包路径，不能直观的看出哪个是表描述类或者是POJO类，而且在同一个类中同时用到POJO和表描述类时，会出现要引用全路径的类(`xx.xx.xx.XXXX`)的情况，降低了代码的可读性
 
 那么如何解决这个问题呢，jOOQ在代码生成的时候，是通过 `org.jooq.codegen.GeneratorStrategy` 接口，来确定所有文件名称的生成规则。在代码生成器配置中，提供了参数可以自己指定该接口的实现类:
 
@@ -304,8 +302,7 @@ public class UserMessagePojo extends S2UserMessage {
 </generator>
 ```
 
-`CustomGeneratorStrategy` 自定义的生成器继承了原有的 `DefaultGeneratorStrategy`，重写了 `getJavaClassName` 这方法。主要是为了区别出 POJO 和 表描述的类名，
-通过这样的配置生成出来的POJO名称会变为类似 `S2UserMessagePojo`，表描述类名为 `TS2UserMessage`，这样能更好的区分POJO和表描述类名，避免在编码过程中产生由于import错误的类，而导致的代码问题。
+`CustomGeneratorStrategy` 自定义的生成器继承了原有的 `DefaultGeneratorStrategy`，重写了 `getJavaClassName` 这方法。主要是为了区别出 POJO 和 表描述的类名，通过这样的配置生成出来的POJO名称会变为类似 `S2UserMessagePojo`，表描述类名为 `TS2UserMessage`，这样能更好的区分POJO和表描述类名，避免在编码过程中产生由于import错误的类，而导致的代码问题。
 ```java
 public class CustomGeneratorStrategy extends DefaultGeneratorStrategy {
     @Override
@@ -343,11 +340,11 @@ public class S2UserMessage extends S2UserMessagePojo {
 }
 ```
 
-另外要注意的是，POJO的继承类，不可以放在jOOQ代码生成目标的包内，因为生成代码时，会删除指定目标包内的所有内容，所以由我们自行创建的POJO类，需要放在和代码生成器目标包的同级或者上级包内，才不会被jOOQ的代码生成器删除。
+另外要注意的是，POJO的继承类，不可以放在jOOQ代码生成目标的包内，因为生成代码时，会删除指定目标包内的所有内容，所以由我们自行创建的POJO类，需要放在和代码生成器目标包的同级或者上级包内，才不会被jOOQ的代码生成器删除
 
 例如jOOQ生成器的目标包名为: `com.diamondfsd.jooq.learn.codegen`
 
-我们的继承类可以放在 `com.diamondfsd.jooq.learn.xxx`，或者其他更顶级的目录下，避免被生成器删除。
+我们的继承类可以放在 `com.diamondfsd.jooq.learn.xxx`，或者其他更顶级的目录下，避免被生成器删除
 
 
 ## 内容总结
@@ -355,12 +352,12 @@ public class S2UserMessage extends S2UserMessagePojo {
 
 所有实例代码都在`src/java/test`目录内，是写好的测试用例。
 
-本章节讲解了如何进行基础的CURD操作，以及POJO生成。有很多人疑问这个POJO和Record有什么区别，因为Record也有`getter/setter`方法，这里给大家讲解一下。
+本章节讲解了如何进行基础的CURD操作，以及POJO生成。有很多人疑问这个POJO和Record有什么区别，因为Record也有`getter/setter`方法，这里给大家讲解一下
 
 - `Record` 的储存方式是将字段描述和值储存在两个数组中，下标一一对应。`get`或`set`的时候，其实现都是通过字段找到对应的下标，进行数组操作的，这样有个问题是无法将其通过`json`序列化为一个字符串。而且`Record`对象通常还包含一些针对字段取值的方式，主要用于操作数据时使用
 
-- `POJO` 是由成员变量和`getter/setter`组成的，是一个纯粹用于存取数据的类，可以通过`json`序列化和反序列化，这样在我们进行web开发的时候，可以很方便的进行数据转换处理。
+- `POJO` 是由成员变量和`getter/setter`组成的，是一个纯粹用于存取数据的类，可以通过`json`序列化和反序列化，这样在我们进行web开发的时候，可以很方便的进行数据转换处理
 
-在实际业务中，通常我们不会直接使用由jOOQ生成的POJO类，因为jOOQ代码生成是全量的。我们在对POJO做一些修改的后，例如添加一些其他表的关联成员，重新生成时，代码又会被抹去。如果要直接改动jOOQ生成的代码，每次重新生成的时候，还需要去备份一遍原来的，而且还需要根据改动去改代码，很麻烦。
+在实际业务中，通常我们不会直接使用由jOOQ生成的POJO类，因为jOOQ代码生成是全量的。我们在对POJO做一些修改的后，例如添加一些其他表的关联成员，重新生成时，代码又会被抹去。如果要直接改动jOOQ生成的代码，每次重新生成的时候，还需要去备份一遍原来的，而且还需要根据改动去改代码，很麻烦
 
-解决这个问题方法也很简单，不直接去修改POJO类，创建一个继承POJO的子类。关联的字段或者其他临时的字段在子类中进行设置成员变量，这样就可以不影响原有的jOOQ而且还能实现我们想要的效果。
+解决这个问题方法也很简单，不直接去修改POJO类，创建一个继承POJO的子类。关联的字段或者其他临时的字段在子类中进行设置成员变量，这样就可以不影响原有的jOOQ而且还能实现我们想要的效果
