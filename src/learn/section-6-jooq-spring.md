@@ -161,10 +161,12 @@ public class Section6Main {
 ``` 
 
 ## 测试用例
-之前的系列文章里，大部分代码都是通过测试用例完成的，为了不对数据库造成污染，在执行测试用例后都会对数据进行 `rollback` 操作，具体的实现方式是通过测试框架的 `@BeforeEach` `@AfterEach` 注解完成的，具体实现代码片段如下。
 
 ### JDBC 事务管理
+之前的系列文章里，大部分代码都是通过测试用例完成的，为了不对数据库造成污染，在执行测试用例后都会对数据进行 `rollback` 操作，具体的实现方式是通过测试框架的 `@BeforeEach` `@AfterEach` 注解完成的，具体实现代码片段如下
+
 其原理为每一个测试方法执行之前，现将数据库连接的 `autoCommit` 改为`false`，不自动提交，在方法执行后，调用连接对象的 `rollback` 方法，进行回滚操作
+
 ```java 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BaseTest {
@@ -198,7 +200,9 @@ public class BaseTest {
 }
 ```
 
-在使用Spring后，可以通过`spring-jdbc`内的事务管理器来进行实物操作，基础的测试类改为如下,只需要添加几个注解即可
+### Spring 事务管理
+在使用Spring后，可以通过`spring-jdbc`内的事务管理器来进行实物操作，基础的测试类改为如下，只需要添加几个注解即可
+
 ```java
 @SpringJUnitConfig(Section6Main.class)
 @Transactional
@@ -209,7 +213,8 @@ public class BaseTest {
 }
 ```
 
-可以通过此测试用例来校验，在 `insert` 测试用例结束之后，数据会回滚，所以在 `findById` 执行的时候，通过之前暂存的 `insertUserId` 是找不到对应数据的，这样可以验证事务是否工作。
+可以通过此测试用例来校验，在 `insert` 测试用例结束之后，数据会回滚，所以在 `findById` 执行的时候，通过之前暂存的 `insertUserId` 是找不到对应数据的，这样可以验证事务是否工作
+
 ```java
 class S1UserDaoTest extends BaseTest {
     @Autowired
@@ -257,4 +262,4 @@ class S1UserDaoTest extends BaseTest {
 ## 内容总结
 本章源码: [https://github.com/k55k32/learn-jooq/tree/master/section-6](https://github.com/k55k32/learn-jooq/tree/master/section-6)
 
-本章介绍最基础的jOOQ和Spring的整合，其实内容并不多，主要是介绍了对于Spring注解生成的支持，以及事务的管理还有就是对于测试用例自动回滚的支持等。
+本章介绍最基础的jOOQ和Spring的整合，其实内容并不多，主要是介绍了对于Spring注解生成的支持，以及事务的管理还有就是对于测试用例自动回滚的支持等
