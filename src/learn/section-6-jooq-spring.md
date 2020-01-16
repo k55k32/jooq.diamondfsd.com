@@ -145,7 +145,7 @@ public class JooqConfiguration {
 }
 ```
 
-至此，通过这些配置，我们可以启动一个Spring + jOOQ 整合的项目，添加一个入口文件: 
+至此，通过这些配置，我们可以启动一个 Spring + jOOQ 整合的项目，添加一个入口文件: 
 ```java
 @ComponentScan
 public class Section6Main {
@@ -158,11 +158,14 @@ public class Section6Main {
 
     }
 }
-``` 
+```
 
 ## 测试用例
+测试用例在项目开发中，能够起到很大的作用，特别是测试覆盖率高了以后，对于项目的稳定性会起到很大的帮助。但是对于后端大部分的程序，测试用例很多是针对数据库进行操作，难免会影响数据库的数据。
 
-### JDBC 事务管理
+这时可以通过一些方法，利用事务的特性，在测试用例执行完成后，进行回滚操作。这样就可以避免产生脏数据，或者污染数据等
+
+### JDBC 方式事务回滚
 之前的系列文章里，大部分代码都是通过测试用例完成的，为了不对数据库造成污染，在执行测试用例后都会对数据进行 `rollback` 操作，具体的实现方式是通过测试框架的 `@BeforeEach` `@AfterEach` 注解完成的，具体实现代码片段如下
 
 其原理为每一个测试方法执行之前，现将数据库连接的 `autoCommit` 改为`false`，不自动提交，在方法执行后，调用连接对象的 `rollback` 方法，进行回滚操作
@@ -200,7 +203,7 @@ public class BaseTest {
 }
 ```
 
-### Spring 事务管理
+### Spring 方式事务回滚
 在使用Spring后，可以通过`spring-jdbc`内的事务管理器来进行实物操作，基础的测试类改为如下，只需要添加几个注解即可
 
 ```java
@@ -262,4 +265,4 @@ class S1UserDaoTest extends BaseTest {
 ## 内容总结
 本章源码: [https://github.com/k55k32/learn-jooq/tree/master/section-6](https://github.com/k55k32/learn-jooq/tree/master/section-6)
 
-本章介绍最基础的jOOQ和Spring的整合，其实内容并不多，主要是介绍了对于Spring注解生成的支持，以及事务的管理还有就是对于测试用例自动回滚的支持等
+本章介绍最基础的jOOQ和Spring的整合，其实内容并不多，主要是介绍了对于Spring注解生成的支持，以及事务的管理还有就是对于测试用例自动回滚的支持方法。是很基础的整合教程。 之后还会介绍和SpringBoot的整合。 了解本章内容，对于之后的内容能够起到很大的帮助
