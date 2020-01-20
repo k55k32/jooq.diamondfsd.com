@@ -10,7 +10,7 @@ order: 9
 相对于直接使用Spring来说，利用Spring Boot来整合jOOQ相对来说简单很多
 
 ## Maven 依赖
-Spring Boot官方有对jooq的支持，所以只需要简单的引用 `spring-boot-starter-jooq` 和对应的jdbc驱动即可
+Spring Boot 官方有对 jOOQ 的支持，所以只需要简单的引用 `spring-boot-starter-jooq` 和对应的jdbc驱动即可
 
 ```xml
 <parent>
@@ -42,7 +42,7 @@ Spring Boot官方有对jooq的支持，所以只需要简单的引用 `spring-bo
 ```
 
 ## 配置
-Spring Boot最大的一个特性就是有很多 `AutoConfiguration` 自动配置。`spring-boot-starter-jooq` 依赖于 `spring-boot-starter-jdbc`， 其自动配置了数据源，事务管理器等。
+Spring Boot最大的一个特性就是有很多 `AutoConfiguration` 自动配置, `spring-boot-starter-jooq` 依赖于 `spring-boot-starter-jdbc`， 其自动配置了数据源，事务管理器等
 
  `spring-boot-starter-jooq` 自动配置了 `org.jooq.Configuration` 和 `org.jooq.DSLContext` 对象。 我们只需要在 `src/main/resources/application.yml` 内写好数据源相关配置，其他的一切都可以交给Spring Boot进行处理
 
@@ -56,7 +56,7 @@ spring:
 ```
 
 ## 运行/测试
-就这样， 我们可以直接通过一个main方法启动这个Spring Boot服务
+直接通过main方法启动 Spring Boot 服务
 
 ```java
 @SpringBootApplication
@@ -67,7 +67,7 @@ public class Section8Main {
 }
 ```
 
-测试用例内，改为使用 `SpringBootTest` 注解
+测试用例内，使用 `SpringBootTest` 注解
 ```java
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Section8Main.class)
@@ -174,11 +174,12 @@ public class JooqAutoConfiguration {
 ```
 
 
-
-所以如果我们需要在使用Spring Boot的情况下使用多数据源，可以在启动入口中的 `@SpringBootApplication` 中使用 `exclude` 选项，不让Spring Boot自动配置数据源和jOOQ。最后参考一下上一篇多数据源的文章，然后进行配置即可
+如果我们需要使用多数据源，可以在启动入口中的 `@SpringBootApplication` 中使用 `exclude` 选项，不让 Spring Boot 自动配置数据源和 jOOQ 的配置。最后参考一下上一篇多数据源的文章内容，然后进行同样的配置即可，Spring Boot 本质上也是对 Spring 框架的整合而已
 
 ```java
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, JooqAutoConfiguration.class, TransactionAutoConfiguration.class})
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, 
+                                  JooqAutoConfiguration.class, 
+                                  TransactionAutoConfiguration.class})
 ```
 
 
