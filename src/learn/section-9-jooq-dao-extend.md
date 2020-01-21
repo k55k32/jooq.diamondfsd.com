@@ -1,11 +1,11 @@
 ---
-title: 对生成的DAO扩展
+title: 为DAO添加分页扩展
 group: extend
 type: guide
 order: 10
 ---
 
-为什么要对DAO进行扩展？ 在之前的篇幅中，我有介绍到，由jOOQ生成的DAO带有一些基础的CURD方法，另外还会针对每个字段生成一些查询方法。 但是这些方法比较单一，都是以单一字段为基础，进行查询操作，不足以面对复杂的业务场景。例如我们业务中常用到的分页查询，多条件查询，都没有在被封装在DAO中，需要使用只能用 `DSLContext` 的API来完成。 其实这些方法比较通用，那么我们其实可以通过一些简单的封装，将这些作为较为通用的公共方法来使用
+为什么要对DAO进行扩展？ 在之前的篇幅中，我有介绍到，由jOOQ生成的DAO带有一些基础的CURD方法，另外还会针对每个字段生成一些查询方法。 但是这些方法比较单一，都是以单一字段为基础，进行查询操作，不足以面对复杂的业务场景。例如我们业务中常用到的分页查询，多条件查询，都没有在被封装在DAO中，需要使用只能用 `DSLContext` 的API来完成。 其实这些方法比较通用，我们可以通过一些简单的封装，能够以更简单的方式进行这些操作
 
 ## 如何进行
 通过jOOQ生成的DAO代码可以发现，所有的DAO都继承了 `DAOImpl` 抽象类，那么我们只需要自己创建一个类去继承 `DAOImpl` 然后让所有的DAO类继承我们自己创建的类，那么就可以在自己创建的类内，来扩展一些公共方法，给每个DAO去使用。假设我们创建的类名称叫 `AbstractExtendDAOImpl`，以 `S1UserDao` 为例，继承关系如下:
@@ -101,12 +101,12 @@ public class S1UserDao extends AbstractExtendDAOImpl<S1UserRecord, S1UserPojo, I
 }
 ```
 
-可以看出，我们需要修改的地方很小，就是将继承的类替换掉， `DAOImpl` 替换为 `AbstractExtendDAOImpl`，并且将 `import` 的类也替换掉即可
+我们需要修改的地方很小，就是将其继承的父类替换掉， `DAOImpl` -> `AbstractExtendDAOImpl`
 
 ### 重写生成器
 通过继承 `JavaGenerator` 可以重写指定代码块的生成逻辑，那么我们这里创建 `CustomJavaGenerator` 类继承 `JavaGenerator`， 重写 `generateDao` 来完成我们想要的效果
 
-我们先看一下官方提供的 `JavaGenerator.generateDAO` 源码，这个方法有两个重载，一个是控制流程负责文件创建，和输出，另一个是填充内容，负责文件内容的构建和输出
+我们先看一下官方提供的 `JavaGenerator.generateDAO` 源码，这个方法有两个重载，一个是控制流程负责文件创建，输出，另一个是填充内容，负责文件内容的构建和输出
 ```java
 protected void generateDao(TableDefinition table) {
     JavaWriter out = newJavaWriter(getFile(table, Mode.DAO));
@@ -120,13 +120,13 @@ protected void generateDao(TableDefinition table, JavaWriter out) {
 }
 ```
 
-我们有两种方式来实现我们想要的效果
+我们有两个方案来实现我们想要的效果
 
-- 第一种方案，将两个方法都完全复制到 `CustomJavaGenerator` 类内，然后修改指定的关键字符串就可以实现我们想要的效果。优点是简单，明了，可控性强，缺点是具体的生成代码过多，我们进行修改时，如果遇到jOOQ的版本更新，可能会有点问题
+- 方案一，将两个方法都完全复制到 `CustomJavaGenerator` 类内，然后修改指定的关键字符串就可以实现我们想要的效果。优点是简单，明了，可控性强，缺点是具体的生成代码过多，我们进行修改时，如果遇到jOOQ的版本更新，可能会有点问题
 
-- 第二种方案，通过调用父级方法完成代码内容填充，然后编码进行替换指定的字符串实现我们想要的效果，此方法优点是改动小，不会影响原来的逻辑，缺点是万一jOOQ 类名做了修改（此情况一般不会出现）会出现兼容问题，需要更新我们替换的字符串内容
+- 方案二，通过调用父级方法完成代码内容填充，然后编码进行替换指定的字符串实现我们想要的效果，此方法优点是改动小，不会影响原来的逻辑，缺点是万一jOOQ 类名做了修改（此情况一般不会出现）会出现兼容问题，需要更新我们替换的字符串内容
 
-这里我采用的是第二种方案，比较简单， 具体的实现逻辑也很简单。 重写 `generateDao(TableDefinition table)`，逻辑如下
+这里我采用的是第二种方案，比较简单， 具体的实现逻辑也很简单。 重写 `generateDao` 方法
 
 1. 添加 `import com.diamondfsd.jooq.learn.extend.AbstractExtendDAOImpl;` 代码块
 2. 调用父类方法进行代码生成
@@ -183,11 +183,11 @@ public class CustomJavaGenerator extends JavaGenerator {
 </generator>
 ```
 
-这样，调用插件是，就会通过此类进行代码生成，就可以实现我们想要的效果了
+通过这样配置，调用代码生成器时，会通过我们自定义的类里的逻辑，进行代码生成
 
+### 分页查询封装
 `AbstractExtendDAOImpl` 类由我们自己创建，所有生成的DAO都继承了此类， 那么进行公共方法的扩展就很简单，直接在此类里写一些扩展的公共方法即可
 
-### DAO扩展代码
 这里我定义了一个接口 `ExtendDAO` 用于定义一些公共方法
 ```java
 public interface ExtendDAO<R extends UpdatableRecord<R>, P, T> extends DAO<R, P, T> {
