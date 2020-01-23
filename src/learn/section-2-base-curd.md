@@ -14,7 +14,7 @@ order: 3
 - `S1_USER.*` 由jOOQ插件生成的表内字段常量
 
 ## Insert
-jOOQ的数据操作通常有两种方式， 第一种是使用类SQL的语法进行调用，第二种是利用 Record API 进行调用
+jOOQ的数据操作通常有两种方式， 第一种是使用 DSLContext API 以类SQL的语法进行调用，第二种是利用 Record API 进行调用
 
 ### 类SQL方式
 插入操作，最基础的方式，是以写SQL语句的习惯，调用API进行插入，支持批量插入
@@ -37,13 +37,13 @@ dslContext.insertInto(S1_USER)
 
 ### Record API
 除了通过编写类SQL的API方式插入数据之外，还可以通过Record的API进行插入数据
-- `dslContext.newRecord` 方法根据表来创建一个`Record`对象，可以通过 `record.store()` 方法插入数据
+- `dslContext.newRecord` 方法根据表来创建一个`Record`对象，可以通过 `record.insert()` 方法插入数据
 ```java
 S1UserRecord record = dslContext.newRecord(S1_USER);
 record.setUsername("usernameRecord1");
 record.setEmail("diamondfsd@gmail.com");
 record.setAddress("address hello");
-record.store();
+record.insert();
 ```
 
 ### 批量插入
@@ -71,7 +71,7 @@ Integer userId = dslContext.insertInto(S1_USER,
     .fetchOne().getId();
 ```
 
-- Record API方式
+- Record API
 通过此方法，自增的主键会自动存入`record`中
 
 ```java
@@ -79,7 +79,7 @@ S1UserRecord record = dslContext.newRecord(S1_USER);
 record.setUsername("usernameRecord1");
 record.setEmail("diamondfsd@gmail.com");
 record.setAddress("address hello");
-record.store();
+record.insert();
 // 这里的id是插入后数据库返回的自增ID，会自动存入record中，可以通过get方法获取
 record.getId();
 ```
@@ -245,7 +245,7 @@ dslContext.batchDelete(recordList).execute();
 ```
 
 
-## POJO和自定义代码生成器配置
+## POJO和代码生成器配置
 之前代码中，进行关联查询时，对于结果集的处理比较麻烦，需要自己创建POJO类进行操作。在实际业务中，多表关联查询是很经常的事情，如果每个查询的结果都需要自己创建POJO来储存数据，那也是不小的工作了，而且操作起来还很繁琐，需要确认每个字段的名称以及类型
 
 对于这样的情况，可以通过jOOQ的代码生成器来解决。代码生成器可以配置在生成代码时，同时生成和表一一对应的POJO，只需要在生成器配置`generator`块中，加上相关配置即可:

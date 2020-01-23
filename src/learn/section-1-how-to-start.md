@@ -6,7 +6,9 @@ order: 2
 ---
 
 ## jOOQ 简介
-[jOOQ](https://jooq.org)，是一个ORM框架，利用其生成的Java代码和流畅的API，可以快速构建有类型约束的安全的SQL语句。让我们的重心可以放在业务逻辑上，Java与SQL的基础部分，都可以交给jOOQ去处理。jOOQ有商业版本和社区版本，商业版本主要比社区版本多支持了一些数据库，可以在他的[授权说明页面](https://www.jooq.org/legal/licensing#databases)上看到各个版本对于数据库的支持情况。开源版本只支持开源数据库包括MySQL等，已经能满足大部分公司开发需求了
+[jOOQ](https://jooq.org)，是一个ORM框架，利用其生成的Java代码和流畅的API，可以快速构建有类型约束的安全的SQL语句
+
+jOOQ使我们的重心可以放在业务逻辑上，而Java与SQL的基础交互部分，都可以交给jOOQ去处理。jOOQ通用支持很多数据库，而且有商业版本和社区版本区别，商业版本和社区版本区别主要是支持数据库不一样，可以在其[授权说明页面](https://www.jooq.org/legal/licensing#databases)上看到各个版本对于数据库的支持情况，开源版本只支持部分开源数据库如MySQL等，这已经能满足大部分公司需求，本系列教程也是基于MySQL数据库进行
 
 jOOQ的核心优势是可以将数据库表结构映射为Java类，包含表的基本描述和所有表字段。通过jOOQ提供的API，配合生成的Java代码，可以很方便的进行数据库操作
 
@@ -25,16 +27,17 @@ jOOQ的代码生成策略是根据配置全量生成，任何对于数据库的�
 ## 如何开始
 
 使用jOOQ时，一般的开发流程为: 
-1. 建立/更新数据库表结构
-2. 通过插件生成Java代码（全量）
+1. 创建/更新 数据库表
+2. 通过jOOQ插件生成Java代码
 3. 进行业务逻辑开发
 
 ### 测试数据库
-导入初始化数据库脚本: [https://github.com/k55k32/learn-jooq/blob/master/learn-jooq.sql](https://github.com/k55k32/learn-jooq/blob/master/learn-jooq.sql)
+导入初始化数据库脚本:
+- [https://github.com/k55k32/learn-jooq/blob/master/learn-jooq.sql](https://github.com/k55k32/learn-jooq/blob/master/learn-jooq.sql)
+- [https://github.com/k55k32/learn-jooq/blob/master/learn-jooq-2.sql](https://github.com/k55k32/learn-jooq/blob/master/learn-jooq-2.sql)
 
 ### Maven配置
-这里使用jOOQ提供的maven插件进行jOOQ部分的代码生成，配置项主要是jdbc链接配置以及生成目标配置
-
+jOOQ 提供了 Maven 插件 `jooq-codegen-maven`，通过配置可以进行代码生成操作，配置项主要是jdbc连接，目标数据库，表，以及生成的路径包名等
 ```xml
 <properties>
     <jooq.version>3.12.3</jooq.version>
@@ -91,7 +94,6 @@ jOOQ的代码生成策略是根据配置全量生成，任何对于数据库的�
         </plugin>
     </plugins>
 </build>
-
 ```
 
 ### 代码生成
@@ -126,9 +128,11 @@ public static void main(String[] args) {
     String jdbcUsername = "root";
     String jdbcPassword = "root";
 
-    // get jdbc connection
+    // 获取 JDBC 链接
     try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcUsername, jdbcPassword)) {
+        // 获取 jOOQ 执行器
         DSLContext dslContext = DSL.using(connection, SQLDialect.MYSQL);
+
         // fetch方法可以返回一个结果集对象 Result
         // jOOQ的Result对象实现了List接口，可以直接当做集合使用
         Result<Record> recordResult = dslContext.select().from(S1_USER).fetch();
