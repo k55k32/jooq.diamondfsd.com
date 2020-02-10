@@ -17,6 +17,7 @@ jOOQ的核心优势是可以将数据库表结构映射为Java类，包含表的
 jOOQ的代码生成策略是根据配置全量生成，任何对于数据库的改动，如果会影响到业务代码，在编译期间就会被发现，可以及时进行修复
 
 本系列文章依赖基础环境如下，不排除因为教程需要会添加其他依赖，都会在项目中标明
+
 - MySQL 5.6 或 更高
 - JDK 1.8
 - jOOQ - 3.12.3
@@ -33,6 +34,7 @@ jOOQ的代码生成策略是根据配置全量生成，任何对于数据库的�
 
 ### 测试数据库
 导入初始化数据库脚本:
+
 - [https://github.com/k55k32/learn-jooq/blob/master/learn-jooq.sql](https://github.com/k55k32/learn-jooq/blob/master/learn-jooq.sql)
 - [https://github.com/k55k32/learn-jooq/blob/master/learn-jooq-2.sql](https://github.com/k55k32/learn-jooq/blob/master/learn-jooq-2.sql)
 
