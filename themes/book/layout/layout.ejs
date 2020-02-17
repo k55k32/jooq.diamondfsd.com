@@ -20,17 +20,17 @@
     </script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=<%- analytics_uid %>"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%- config.analytics_uid %>"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', '<%- analytics_uid %>');
+      gtag('config', '<%- config.analytics_uid %>');
     </script>
 
     <!-- Google Ads -->
-    <script data-ad-client="<%- adsence_uid %>" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script data-ad-client="<%- config.adsence_uid %>" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
   </head>
   <body class="docs">
