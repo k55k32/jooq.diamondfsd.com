@@ -25,6 +25,10 @@ archive_dir: archives
 category_dir: categories
 code_dir: downloads/code
 
+# Google
+analytics_uid: UA-115185351-2
+adsence_uid: ca-pub-3418708829554005
+
 # Directory
 source_dir: src
 public_dir: public
