@@ -218,7 +218,7 @@ userRecord.set(S1_USER.USERNAME, "username");
 userRecord.update();
 ```
 
-- `get[FieldName]()` jOOQ生成和表字段一一对应的`setter`方法，可以通过此方法直接设置指定字段值，实际调用的是 `set(fieldIndex, object)` 方法
+- `set[FieldName]()` jOOQ生成和表字段一一对应的`setter`方法，可以通过此方法直接设置指定字段值，实际调用的是 `set(fieldIndex, object)` 方法
 ```java
 S1UserRecord userRecord = dslContext.newRecord(S1_USER);
 userRecord.setId(1);
