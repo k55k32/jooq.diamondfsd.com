@@ -84,7 +84,7 @@ jOOQ 提供了 Maven 插件 `jooq-codegen-maven`，通过配置可以进行代�
                 </jdbc>
                 <generator>
                     <database>
-                        <includes>s1-.*</includes>
+                        <includes>s1_.*</includes>
                         <inputSchema>learn-jooq</inputSchema>
                     </database>
                     <target>
